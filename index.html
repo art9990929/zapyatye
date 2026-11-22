@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Запятые">
+<meta name="theme-color" content="#f6f4ef">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>Запятые</title>
+<style>
+:root{
+  --bg:#f6f4ef; --card:#fff; --text:#1f2328; --muted:#6b6f76; --line:#e4e1d9;
+  --accent:#3b5bdb; --accent-soft:#e7ecff; --ok:#2b8a3e; --ok-soft:#e3f6e8;
+  --bad:#c92a2a; --bad-soft:#fde8e8; --gap:#c9c5bb;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#16171a; --card:#212226; --text:#ececec; --muted:#9a9ca3; --line:#33353b;
+    --accent:#7c9bff; --accent-soft:#2a3150; --ok:#69db7c; --ok-soft:#1f3326;
+    --bad:#ff8787; --bad-soft:#3d2222; --gap:#55575e;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+  -webkit-text-size-adjust:100%;}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  min-height:100vh; user-select:none; -webkit-user-select:none;}
+.wrap{max-width:640px;margin:0 auto;padding:16px 16px 40px}
+h1{font-size:28px;margin:8px 0 4px}
+h2{font-size:20px;margin:0 0 12px}
+.sub{color:var(--muted);font-size:15px;margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.topic{display:flex;align-items:center;gap:12px;cursor:pointer}
+.topic .t{flex:1}
+.topic .name{font-weight:600;font-size:17px}
+.topic .meta{color:var(--muted);font-size:13px;margin-top:4px}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:3px}
+.chev{color:var(--muted);font-size:22px}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:15px;font-size:17px;font-weight:600;
+  background:var(--accent);color:#fff;cursor:pointer;font-family:inherit}
+.btn.sec{background:var(--accent-soft);color:var(--accent)}
+.btn.ghost{background:transparent;color:var(--muted);font-weight:500}
+.btn:disabled{opacity:.4}
+.row{display:flex;gap:10px}
+.row .btn{flex:1}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.back{border:0;background:none;color:var(--accent);font-size:17px;padding:8px 0;cursor:pointer;font-family:inherit}
+.prog{color:var(--muted);font-size:15px}
+.task{font-size:15px;color:var(--muted);margin-bottom:10px}
+.sent{font-size:23px;line-height:2.1;word-wrap:break-word}
+.w{white-space:nowrap}
+.gap{display:inline-block;min-width:26px;height:38px;vertical-align:middle;margin:0 1px;border-radius:8px;
+  border:1.5px dashed var(--gap);background:transparent;color:var(--text);font-size:23px;font-weight:700;
+  line-height:34px;text-align:center;padding:0 4px;cursor:pointer;font-family:inherit}
+.gap.on{border-style:solid;border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.gap.done{border-color:transparent;background:transparent;cursor:default}
+.gap.ok{color:var(--ok);background:var(--ok-soft)}
+.gap.miss{color:var(--bad);background:var(--bad-soft);border:1.5px dashed var(--bad)}
+.gap.extra{color:var(--bad);background:var(--bad-soft);text-decoration:line-through}
+.gap.blank{min-width:6px;width:6px;padding:0;border:0}
+.opt{display:block;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--text);
+  border-radius:14px;padding:14px;font-size:19px;line-height:1.45;margin-bottom:10px;cursor:pointer;
+  white-space:pre-line;font-family:inherit}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+.opt.bad{border-color:var(--bad);background:var(--bad-soft)}
+.fb{border-radius:14px;padding:14px;margin:14px 0;font-size:16px;line-height:1.45}
+.fb.ok{background:var(--ok-soft)}
+.fb.bad{background:var(--bad-soft)}
+.fb b{display:block;font-size:17px;margin-bottom:4px}
+.fb .right{margin-top:8px;font-size:18px}
+.theory{font-size:17px;line-height:1.55}
+.theory h3{font-size:18px;margin:18px 0 6px}
+.theory p{margin:6px 0}
+.theory .ex{background:var(--accent-soft);border-radius:10px;padding:8px 12px;margin:6px 0}
+.theory .ex.no{background:var(--bad-soft)}
+.big{font-size:56px;font-weight:700;text-align:center;margin:20px 0 4px}
+.center{text-align:center}
+.small{font-size:13px;color:var(--muted)}
+.spacer{height:12px}
+.mode{display:flex;align-items:center;gap:12px;cursor:pointer}
+.mode .ic{font-size:26px;width:36px;text-align:center}
+.badge{background:var(--bad);color:#fff;border-radius:10px;padding:2px 8px;font-size:13px;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ============ СОДЕРЖАНИЕ ============
+   Тип «gap»: предложение записано правильно, со знаками.
+   Ученик видит его без знаков и ставит их, нажимая между словами.
+   Тире пишется отдельным словом: «Москва — столица».
+   Тип «choice»: выбор правильного варианта из нескольких (первый вариант — правильный, порядок перемешивается).
+*/
+const TOPICS = [
+{
+  id:'odn', title:'Однородные члены', marks:[','],
+  theory:`
+  <p>Однородные члены отвечают на один и тот же вопрос и относятся к одному слову.</p>
+  <h3>Без союзов — запятая</h3>
+  <div class="ex">Дети пели<b>,</b> смеялись<b>,</b> танцевали.</div>
+  <h3>Перед А, НО, ДА (= но), ОДНАКО — запятая</h3>
+  <div class="ex">Ветер не утихал<b>,</b> а усиливался.</div>
+  <div class="ex">Погода была холодной<b>,</b> но солнечной.</div>
+  <h3>Одиночное И или ИЛИ — запятой нет</h3>
+  <div class="ex">Брат любит футбол и хоккей.</div>
+  <h3>Повторяющиеся И…И, НИ…НИ — запятая перед вторым и следующими</h3>
+  <div class="ex">Росли и ромашки<b>,</b> и колокольчики<b>,</b> и клевер.</div>
+  <div class="ex">Ни ветер<b>,</b> ни дождь не остановили нас.</div>`,
+  items:[
+    {s:'Мама купила яблоки, груши и сливы.', e:'Однородные члены без союза разделяются запятой. Перед одиночным «и» запятая не нужна.'},
+    {s:'Мы шли быстро и весело.', e:'Два однородных члена соединены одиночным «и» — запятая не нужна.'},
+    {s:'В лесу пахло грибами, мхом, сырой листвой.', e:'Однородные члены без союзов разделяются запятыми.'},
+    {s:'Ветер не утихал, а усиливался.', e:'Перед союзом «а» между однородными членами ставится запятая.'},
+    {s:'Погода была холодной, но солнечной.', e:'Перед союзом «но» всегда ставится запятая.'},
+    {s:'Брат любит футбол и хоккей.', e:'Одиночное «и» — запятая не нужна.'},
+    {s:'На поляне росли и ромашки, и колокольчики, и клевер.', e:'Союз «и» повторяется — запятая ставится перед вторым и следующими «и».'},
+    {s:'Город был небольшой, да красивый.', e:'Здесь «да» значит «но» — перед ним запятая.'},
+    {s:'Дети пели, смеялись, танцевали.', e:'Однородные сказуемые без союзов разделяются запятыми.'},
+    {s:'Мы купили не хлеб, а булку.', e:'Противопоставление «не…, а» — перед «а» запятая.'},
+    {s:'Я прочитал рассказ и пересказал его.', e:'Однородные сказуемые с одиночным «и» — запятая не нужна.'},
+    {s:'Небо было серое, хмурое, неприветливое.', e:'Однородные определения без союзов разделяются запятыми.'},
+    {s:'Ни ветер, ни дождь не остановили нас.', e:'Повторяющийся союз «ни…ни» — запятая перед вторым «ни».'},
+    {s:'Кот спрыгнул с дивана и побежал на кухню.', e:'Одиночное «и» между однородными сказуемыми — запятая не нужна.'},
+    {s:'Солнце светило ярко, однако не грело.', e:'Перед противительным союзом «однако» ставится запятая.'},
+  ]
+},
+{
+  id:'obob', title:'Обобщающее слово', marks:[',',':','—'],
+  theory:`
+  <p>Обобщающее слово называет всё вместе: <i>всё, все, везде, цветы, птицы…</i></p>
+  <h3>Обобщающее слово ПЕРЕД перечислением — двоеточие</h3>
+  <div class="ex">В вазе стояли цветы<b>:</b> розы, тюльпаны и нарциссы.</div>
+  <h3>Обобщающее слово ПОСЛЕ перечисления — тире</h3>
+  <div class="ex">Розы, тюльпаны, нарциссы <b>—</b> всё стояло в вазе.</div>
+  <p class="small">Нажимай на промежуток несколько раз, чтобы выбрать нужный знак: , → : → — → пусто.</p>`,
+  items:[
+    {s:'В саду росли разные деревья: яблони, груши, сливы.', e:'Обобщающее слово «деревья» стоит перед перечислением — ставим двоеточие.'},
+    {s:'Яблоки, груши, сливы — всё росло в нашем саду.', e:'Обобщающее слово «всё» стоит после перечисления — ставим тире.'},
+    {s:'На столе лежали школьные принадлежности: тетради, ручки и карандаши.', e:'Обобщающее слово перед перечислением — двоеточие. Перед одиночным «и» запятой нет.'},
+    {s:'Мама, папа, бабушка — все пришли на мой праздник.', e:'Обобщающее слово «все» после перечисления — тире.'},
+    {s:'Я люблю все времена года: зиму, весну, лето и осень.', e:'«Времена года» — обобщающее слово перед перечислением, ставим двоеточие.'},
+    {s:'В вазе стояли цветы: розы, тюльпаны и нарциссы.', e:'Обобщающее слово «цветы» перед перечислением — двоеточие.'},
+    {s:'Карандаши, краски, кисти — всё было готово к уроку рисования.', e:'Обобщающее слово «всё» после перечисления — тире.'},
+    {s:'Весной прилетели птицы: грачи, скворцы, ласточки.', e:'Обобщающее слово «птицы» перед перечислением — двоеточие.'},
+    {s:'Ни в лесу, ни в поле — нигде не было снега.', e:'Обобщающее слово «нигде» после перечисления — тире. «Ни…ни» — запятая перед вторым «ни».'},
+    {s:'В рюкзаке было всё необходимое: вода, хлеб, фонарик и карта.', e:'Обобщающее слово «всё необходимое» перед перечислением — двоеточие.'},
+  ]
+},
+{
+  id:'obr', title:'Обращение', marks:[','],
+  theory:`
+  <p>Обращение — слово, которым называют того, к кому обращаются. Оно <b>не является членом предложения</b> и выделяется запятыми.</p>
+  <h3>В начале — запятая после</h3>
+  <div class="ex">Мама<b>,</b> можно я пойду гулять?</div>
+  <h3>В середине — запятые с двух сторон</h3>
+  <div class="ex">Скажи мне<b>,</b> Петя<b>,</b> где ты был?</div>
+  <h3>В конце — запятая перед</h3>
+  <div class="ex">Я тебя жду<b>,</b> Саша.</div>
+  <h3>Не путай с подлежащим!</h3>
+  <div class="ex no">Маша позвала Сашу гулять. — здесь никто ни к кому не обращается, запятых нет.</div>`,
+  items:[
+    {s:'Мама, можно я пойду гулять?', e:'«Мама» — обращение в начале предложения, после него запятая.'},
+    {s:'Здравствуй, дорогой друг!', e:'«Дорогой друг» — обращение, отделяется запятой.'},
+    {s:'Ребята, давайте поиграем в футбол.', e:'«Ребята» — обращение в начале, после него запятая.'},
+    {s:'Скажи мне, Петя, где ты был?', e:'Обращение в середине выделяется запятыми с двух сторон.'},
+    {s:'Спасибо тебе, бабушка, за пирожки!', e:'Обращение «бабушка» в середине — запятые с двух сторон.'},
+    {s:'Я тебя жду, Саша.', e:'Обращение в конце — запятая перед ним.'},
+    {s:'Дорогая Анна Петровна, поздравляем вас с праздником!', e:'«Дорогая Анна Петровна» — обращение целиком, запятая после него.'},
+    {s:'Маша позвала Сашу гулять.', e:'Здесь нет обращения: Маша — подлежащее, Сашу — дополнение. Запятые не нужны.'},
+    {s:'Послушай, Коля, что я тебе расскажу.', e:'«Коля» — обращение в середине, выделяется запятыми с двух сторон.'},
+    {s:'Уважаемые пассажиры, будьте внимательны!', e:'«Уважаемые пассажиры» — обращение, после него запятая.'},
+    {s:'Учитель попросил учеников открыть тетради.', e:'Обращения нет: «учитель» — подлежащее, «учеников» — дополнение. Запятые не нужны.'},
+    {s:'Солнышко, выгляни из-за туч!', e:'«Солнышко» — обращение (к солнцу обращаются как к живому), после него запятая.'},
+  ]
+},
+{
+  id:'vvod', title:'Вводные слова', marks:[','],
+  theory:`
+  <p>Вводные слова показывают отношение говорящего к сказанному: уверенность, сомнение, радость, порядок мыслей. Они <b>не являются членами предложения</b> и выделяются запятыми.</p>
+  <p>Частые вводные слова: <i>конечно, наверное, может быть, к счастью, к сожалению, во-первых, по-моему, кажется, безусловно, например.</i></p>
+  <div class="ex">К сожалению<b>,</b> мы опоздали.</div>
+  <div class="ex">Он<b>,</b> конечно<b>,</b> прав.</div>
+  <h3>Проверка</h3>
+  <p>Вводное слово можно убрать — и предложение не сломается: «Он прав».</p>`,
+  items:[
+    {s:'К сожалению, мы опоздали на поезд.', e:'«К сожалению» — вводное слово в начале, после него запятая.'},
+    {s:'Завтра, наверное, пойдёт дождь.', e:'«Наверное» — вводное слово в середине, выделяется запятыми с двух сторон.'},
+    {s:'Он, конечно, прав.', e:'«Конечно» — вводное слово, выделяется запятыми.'},
+    {s:'Во-первых, надо сделать уроки.', e:'«Во-первых» — вводное слово, показывает порядок мыслей.'},
+    {s:'По-моему, это лучший фильм.', e:'«По-моему» — вводное слово, после него запятая.'},
+    {s:'Наверное, он уже дома.', e:'«Наверное» — вводное слово в начале, после него запятая.'},
+    {s:'Кажется, кто-то стучит в дверь.', e:'«Кажется» — вводное слово (можно убрать), после него запятая.'},
+    {s:'Это, безусловно, интересная книга.', e:'«Безусловно» — вводное слово, выделяется запятыми с двух сторон.'},
+    {s:'Вы, может быть, правы.', e:'«Может быть» — вводное сочетание, выделяется запятыми.'},
+    {s:'Мы, к счастью, успели до дождя.', e:'«К счастью» — вводное сочетание, выделяется запятыми.'},
+    {s:'Мне кажется, что скоро весна.', e:'Здесь «мне кажется» — главная часть сложного предложения. Запятая стоит перед «что».'},
+  ]
+},
+{
+  id:'slozh', title:'Сложное предложение', marks:[','],
+  theory:`
+  <p>В сложном предложении несколько грамматических основ (подлежащее + сказуемое). Части отделяются запятой.</p>
+  <h3>С союзами И, А, НО</h3>
+  <div class="ex">Наступила осень<b>,</b> и птицы улетели на юг.</div>
+  <h3>Со словами ЧТО, ЧТОБЫ, КОГДА, ГДЕ, ПОТОМУ ЧТО, ЕСЛИ, КОТОРЫЙ</h3>
+  <div class="ex">Мама сказала<b>,</b> что ужин готов.</div>
+  <div class="ex">Когда мы пришли домой<b>,</b> начался дождь.</div>
+  <h3>Не путай с однородными членами!</h3>
+  <div class="ex no">Я прочитал книгу и вернул её. — одно подлежащее «я», два сказуемых. Это простое предложение, запятой нет.</div>`,
+  items:[
+    {s:'Наступила осень, и птицы улетели на юг.', e:'Две основы: «осень наступила» и «птицы улетели». Перед «и» между частями ставим запятую.'},
+    {s:'Я позвонил другу, но он не ответил.', e:'Две основы: «я позвонил», «он не ответил». Перед «но» запятая.'},
+    {s:'Мама сказала, что ужин готов.', e:'Две части соединены словом «что» — перед ним запятая.'},
+    {s:'Когда мы пришли домой, начался дождь.', e:'Часть с «когда» стоит первой — запятая после неё.'},
+    {s:'Я знаю, где спрятан ключ.', e:'Две части соединены словом «где» — перед ним запятая.'},
+    {s:'Мы не пошли гулять, потому что шёл дождь.', e:'Перед «потому что» ставится запятая.'},
+    {s:'Это дом, который построил Джек.', e:'Перед словом «который» ставится запятая.'},
+    {s:'Солнце село, а ветер всё не утихал.', e:'Две основы: «солнце село», «ветер не утихал». Перед «а» запятая.'},
+    {s:'Я прочитал книгу и вернул её в библиотеку.', e:'Подлежащее одно — «я», а сказуемых два. Это однородные сказуемые с одиночным «и», запятая не нужна.'},
+    {s:'Если будет хорошая погода, мы поедем на дачу.', e:'Часть с «если» стоит первой — запятая после неё.'},
+    {s:'Мальчик понял, что заблудился.', e:'Перед «что», соединяющим части сложного предложения, ставится запятая.'},
+    {s:'Дул сильный ветер, шёл снег.', e:'Две основы без союза: «ветер дул», «снег шёл». Между ними запятая.'},
+    {s:'Ученики слушали учителя и записывали.', e:'Одно подлежащее «ученики», два сказуемых с одиночным «и» — запятая не нужна.'},
+  ]
+},
+{
+  id:'tire', title:'Тире между подлежащим и сказуемым', marks:['—',','],
+  theory:`
+  <h3>Тире ставится, если подлежащее и сказуемое — существительные</h3>
+  <div class="ex">Москва <b>—</b> столица России.</div>
+  <div class="ex">Мой брат <b>—</b> врач.</div>
+  <h3>…или числительные, или неопределённая форма глагола</h3>
+  <div class="ex">Дважды два <b>—</b> четыре.</div>
+  <div class="ex">Наша задача <b>—</b> хорошо учиться.</div>
+  <h3>Тире НЕ ставится</h3>
+  <div class="ex no">если подлежащее — местоимение: Я ученик шестого класса.</div>
+  <div class="ex no">если перед сказуемым есть НЕ: Кит не рыба.</div>`,
+  items:[
+    {s:'Москва — столица России.', e:'Подлежащее и сказуемое — существительные в именительном падеже. Ставим тире.'},
+    {s:'Берёза — красивое дерево.', e:'Подлежащее «берёза» и сказуемое «дерево» — существительные. Тире.'},
+    {s:'Кит не рыба.', e:'Перед сказуемым стоит «не» — тире не ставится.'},
+    {s:'Он хороший друг.', e:'Подлежащее выражено местоимением «он» — тире не ставится.'},
+    {s:'Дважды два — четыре.', e:'Подлежащее и сказуемое — числа. Ставим тире.'},
+    {s:'Мой брат — врач.', e:'Оба главных члена — существительные. Тире.'},
+    {s:'Собака — друг человека.', e:'«Собака» и «друг» — существительные. Тире.'},
+    {s:'Я ученик шестого класса.', e:'Подлежащее «я» — местоимение. Тире не нужно.'},
+    {s:'Ель — хвойное дерево.', e:'Оба главных члена — существительные. Тире.'},
+    {s:'Наша задача — хорошо учиться.', e:'Сказуемое выражено неопределённой формой глагола («учиться»). Тире.'},
+    {s:'Читать книги — значит узнавать новое.', e:'Перед словом «значит» в таком предложении ставится тире.'},
+  ]
+},
+{
+  id:'rech', title:'Прямая речь и диалог', type:'choice',
+  theory:`
+  <p>Обозначим слова автора буквой <b>А</b>, прямую речь — <b>П</b> (с большой буквы) или <b>п</b> (с маленькой).</p>
+  <h3>Слова автора перед прямой речью</h3>
+  <div class="ex">А: «П».<br>Мама сказала: «Обед готов».</div>
+  <div class="ex">А: «П?» / А: «П!»<br>Петя спросил: «Ты придёшь?»</div>
+  <h3>Слова автора после прямой речи</h3>
+  <div class="ex">«П», — а.<br>«Обед готов», — сказала мама.</div>
+  <div class="ex">«П?» — а. / «П!» — а.<br>«Ты придёшь?» — спросил Петя.</div>
+  <h3>Слова автора внутри прямой речи</h3>
+  <div class="ex">«П, — а, — п».<br>«Я думаю, — сказал Миша, — что завтра будет снег».</div>
+  <h3>Диалог</h3>
+  <p>Каждая реплика — с новой строки, перед ней тире, кавычки не нужны.</p>
+  <div class="ex">— Ты сделал уроки?<br>— Да, уже сделал.</div>`,
+  items:[
+    {q:'Мама сказала обед готов', opts:['Мама сказала: «Обед готов».','Мама сказала «Обед готов».','Мама сказала, «обед готов».'], e:'Слова автора перед прямой речью: А: «П». После слов автора — двоеточие, прямая речь с большой буквы, точка после кавычек.'},
+    {q:'обед готов сказала мама', opts:['«Обед готов», — сказала мама.','«Обед готов» — сказала мама.','«Обед готов.» — Сказала мама.'], e:'Слова автора после прямой речи: «П», — а. Запятая и тире, слова автора с маленькой буквы.'},
+    {q:'ты придёшь спросил Петя', opts:['«Ты придёшь?» — спросил Петя.','«Ты придёшь?», — спросил Петя.','«Ты придёшь», — спросил Петя?'], e:'«П?» — а. После вопросительного знака запятая не ставится.'},
+    {q:'Петя спросил ты придёшь', opts:['Петя спросил: «Ты придёшь?»','Петя спросил: «Ты придёшь?».','Петя спросил, ты придёшь?'], e:'А: «П?» — если прямая речь заканчивается вопросительным знаком, точку после кавычек не ставят.'},
+    {q:'какой чудесный день воскликнула Оля', opts:['«Какой чудесный день!» — воскликнула Оля.','«Какой чудесный день», — воскликнула Оля!','«Какой чудесный день!», — воскликнула Оля.'], e:'«П!» — а. Восклицательный знак остаётся внутри кавычек, запятая не нужна.'},
+    {q:'я думаю сказал Миша что завтра будет снег', opts:['«Я думаю, — сказал Миша, — что завтра будет снег».','«Я думаю», — сказал Миша, — «что завтра будет снег».','«Я думаю, сказал Миша, что завтра будет снег».'], e:'Слова автора внутри прямой речи: «П, — а, — п». Кавычки только в начале и в конце всей прямой речи.'},
+    {q:'Как правильно оформить диалог?', opts:['— Ты сделал уроки?\n— Да, уже сделал.','«Ты сделал уроки?»\n«Да, уже сделал.»','Ты сделал уроки? — Да, уже сделал.'], e:'В диалоге каждая реплика начинается с новой строки, перед ней тире, кавычки не ставятся.'},
+    {q:'учитель сказал откройте учебники', opts:['Учитель сказал: «Откройте учебники».','Учитель сказал: «откройте учебники».','Учитель сказал: Откройте учебники.'], e:'Прямая речь начинается с большой буквы и заключается в кавычки.'},
+    {q:'учитель сказал что завтра контрольная (пересказ чужих слов)', opts:['Учитель сказал, что завтра контрольная.','Учитель сказал: «что завтра контрольная».','Учитель сказал что завтра контрольная.'], e:'Это косвенная речь — пересказ чужих слов. Кавычки не нужны, это сложное предложение: перед «что» запятая.'},
+    {q:'пойдём гулять предложил брат', opts:['«Пойдём гулять», — предложил брат.','«Пойдём гулять» — предложил брат.','«Пойдём гулять», предложил брат.'], e:'«П», — а. Нужны и запятая, и тире.'},
+  ]
+},
+];
+
+/* ============ ПАРСЕР ============ */
+function parseGap(s){
+  const toks = s.split(' ');
+  const words = [], ans = [];
+  for(const t of toks){
+    if(t==='—' || t===':'){ ans[words.length-1] = t; continue; }
+    const m = t.match(/^(.*?)([,:]?)$/);
+    words.push(m[1]);
+    if(m[2]) ans[words.length-1] = m[2];
+  }
+  const gaps = [];
+  for(let i=0;i<words.length-1;i++) gaps.push(ans[i]||'');
+  return {words, gaps};
+}
+
+/* ============ ХРАНИЛИЩЕ ============ */
+const KEY='punct.v1';
+let DB;
+try{ DB = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ DB = {}; }
+DB.items = DB.items || {};
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){} }
+function st(id){ return DB.items[id] || {c:0,w:0,s:0}; }
+function record(id, ok){
+  const r = st(id);
+  if(ok){ r.c++; r.s++; } else { r.w++; r.s=0; }
+  r.t = Date.now();
+  DB.items[id] = r; save();
+}
+// освоено: ответил верно и (никогда не ошибался или 2 раза подряд верно после ошибки)
+function mastered(id){ const r=st(id); return r.s>=1 && (r.w===0 || r.s>=2); }
+function isMistake(id){ const r=st(id); return r.w>0 && r.s<2; }
+
+const ALL = [];
+TOPICS.forEach(t => t.items.forEach((it,i) => { it.id = t.id+'-'+i; it.topic = t; ALL.push(it); }));
+
+/* ============ ЭКРАНЫ ============ */
+const app = document.getElementById('app');
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function home(){
+  const mist = ALL.filter(it=>isMistake(it.id)).length;
+  const total = ALL.length, done = ALL.filter(it=>mastered(it.id)).length;
+  let h = `<h1>Запятые</h1><p class="sub">Освоено ${done} из ${total} заданий</p>`;
+  h += `<div class="card mode" data-mode="mix"><div class="ic">🎲</div><div class="t" style="flex:1"><div class="name" style="font-weight:600;font-size:17px">Все темы вперемешку</div><div class="meta small">10 заданий</div></div><div class="chev">›</div></div>`;
+  if(mist) h += `<div class="card mode" data-mode="err"><div class="ic">🔁</div><div style="flex:1"><div style="font-weight:600;font-size:17px">Работа над ошибками</div><div class="small">Задания, в которых были ошибки</div></div><span class="badge">${mist}</span><div class="chev">›</div></div>`;
+  h += `<h2 style="margin-top:22px">Темы</h2>`;
+  TOPICS.forEach(t=>{
+    const n=t.items.length, m=t.items.filter(it=>mastered(it.id)).length;
+    h += `<div class="card topic" data-topic="${t.id}"><div class="t"><div class="name">${t.title}</div>
+      <div class="meta">${m} из ${n}</div><div class="bar"><i style="width:${Math.round(m/n*100)}%"></i></div></div><div class="chev">›</div></div>`;
+  });
+  h += `<div class="spacer"></div><button class="btn ghost" id="reset">Сбросить прогресс</button>`;
+  app.innerHTML = h;
+  app.querySelectorAll('[data-topic]').forEach(el=>el.onclick=()=>topicScreen(TOPICS.find(t=>t.id===el.dataset.topic)));
+  app.querySelectorAll('[data-mode]').forEach(el=>el.onclick=()=>{
+    if(el.dataset.mode==='mix') startSession(pick(ALL,10),'Все темы');
+    else startSession(shuffle(ALL.filter(it=>isMistake(it.id))).slice(0,15),'Работа над ошибками');
+  });
+  const r=document.getElementById('reset'); let armed=false;
+  r.onclick=()=>{ if(!armed){armed=true;r.textContent='Нажми ещё раз, чтобы сбросить';r.style.color='var(--bad)';setTimeout(()=>{armed=false;r.textContent='Сбросить прогресс';r.style.color='';},3000);return;}
+    DB={items:{}}; save(); home(); };
+  window.scrollTo(0,0);
+}
+
+// выбор заданий: сначала ошибки и новые, потом остальные
+function pick(list,n){
+  const score = it => isMistake(it.id)?0 : (st(it.id).c+st(it.id).w===0)?1 : mastered(it.id)?3:2;
+  return shuffle(list).sort((a,b)=>score(a)-score(b)).slice(0,n).sort(()=>Math.random()-.5);
+}
+
+function topicScreen(t){
+  app.innerHTML = `<div class="top"><button class="back" id="bk">‹ Темы</button></div>
+    <h2>${t.title}</h2>
+    <div class="card theory">${t.theory}</div>
+    <button class="btn" id="go">Тренироваться</button>`;
+  document.getElementById('bk').onclick=home;
+  document.getElementById('go').onclick=()=>startSession(pick(t.items,10),t.title,t);
+  window.scrollTo(0,0);
+}
+
+let S;
+function startSession(items,title,topic){
+  if(!items.length){ home(); return; }
+  S={items,title,topic,i:0,right:0};
+  showItem();
+}
+
+function header(){
+  return `<div class="top"><button class="back" id="bk">‹ Выйти</button><span class="prog">${S.i+1} / ${S.items.length}</span></div>`;
+}
+
+function showItem(){
+  const it = S.items[S.i];
+  if(it.topic.type==='choice') showChoice(it); else showGap(it);
+  document.getElementById('bk').onclick=()=> S.topic? topicScreen(S.topic) : home();
+  window.scrollTo(0,0);
+}
+
+function showGap(it){
+  const {words,gaps} = parseGap(it.s);
+  const marks = it.topic.marks;
+  const user = gaps.map(()=> '');
+  let h = header();
+  h += `<div class="task">${esc(it.topic.title)} · Нажми между словами, где нужен знак${marks.length>1?' (нажимай несколько раз, чтобы сменить знак)':''}</div>`;
+  h += `<div class="card"><div class="sent" id="sent"></div></div><div id="fb"></div>
+    <button class="btn" id="chk">Проверить</button>`;
+  app.innerHTML = h;
+  const sent = document.getElementById('sent');
+  let checked=false;
+  function render(){
+    let x='';
+    words.forEach((w,i)=>{
+      if(i<gaps.length){
+        let cls='gap', txt=user[i];
+        if(user[i]) cls+=' on';
+        if(checked){
+          cls='gap done';
+          if(gaps[i] && user[i]===gaps[i]){cls+=' ok';}
+          else if(gaps[i] && !user[i]){cls+=' miss';txt=gaps[i];}
+          else if(!gaps[i] && user[i]){cls+=' extra';}
+          else if(gaps[i] && user[i]!==gaps[i]){cls+=' miss';txt=gaps[i];}
+          else {cls+=' blank';txt='';}
+        }
+        x += `<span class="w">${esc(w)}<button class="${cls}" data-g="${i}">${esc(txt)}</button></span> `;
+      } else x += `<span class="w">${esc(w)}</span>`;
+    });
+    sent.innerHTML = x;
+    if(!checked) sent.querySelectorAll('.gap').forEach(b=>b.onclick=()=>{
+      const i=+b.dataset.g; const cyc=['',...marks];
+      user[i]=cyc[(cyc.indexOf(user[i])+1)%cyc.length]; render();
+    });
+  }
+  render();
+  document.getElementById('chk').onclick=function(){
+    if(checked){ next(); return; }
+    checked=true;
+    const ok = gaps.every((g,i)=>g===user[i]);
+    finish(it,ok, ok?'':`<div class="right">${esc(it.s)}</div>`);
+    render();
+    this.textContent = S.i+1<S.items.length?'Дальше':'Результат';
+  };
+}
+
+function showChoice(it){
+  const opts = shuffle(it.opts.map((o,i)=>({o,ok:i===0})));
+  let h = header();
+  h += `<div class="task">${esc(it.topic.title)} · Выбери правильный вариант</div>`;
+  h += `<div class="card" style="font-size:18px;color:var(--muted)">${esc(it.q)}</div>`;
+  opts.forEach((o,i)=> h+=`<button class="opt" data-i="${i}">${esc(o.o)}</button>`);
+  h += `<div id="fb"></div><button class="btn" id="chk" disabled>Проверить</button>`;
+  app.innerHTML=h;
+  let sel=-1, checked=false;
+  const btns=[...app.querySelectorAll('.opt')], chk=document.getElementById('chk');
+  btns.forEach(b=>b.onclick=()=>{ if(checked)return; sel=+b.dataset.i; btns.forEach(x=>x.classList.toggle('sel',x===b)); chk.disabled=false; });
+  chk.onclick=function(){
+    if(checked){ next(); return; }
+    checked=true;
+    const ok=opts[sel].ok;
+    btns.forEach((b,i)=>{ b.classList.remove('sel'); if(opts[i].ok) b.classList.add('ok'); else if(i===sel) b.classList.add('bad'); });
+    finish(it,ok,'');
+    this.textContent = S.i+1<S.items.length?'Дальше':'Результат';
+  };
+}
+
+function finish(it,ok,extra){
+  record(it.id,ok);
+  if(ok) S.right++;
+  document.getElementById('fb').innerHTML =
+    `<div class="fb ${ok?'ok':'bad'}"><b>${ok?'Верно! ✓':'Есть ошибка'}</b>${esc(it.e)}${extra}</div>`;
+}
+
+function next(){
+  S.i++;
+  if(S.i<S.items.length) showItem(); else results();
+}
+
+function results(){
+  const n=S.items.length, r=S.right, p=r/n;
+  const msg = p===1?'Идеально! 🎉': p>=.8?'Отлично! 👍': p>=.5?'Хорошо, но есть что повторить':'Стоит перечитать правило и попробовать ещё';
+  app.innerHTML = `<div class="big">${r} / ${n}</div><p class="center" style="font-size:18px">${msg}</p><div class="spacer"></div>
+    <div class="row"><button class="btn sec" id="home">К темам</button><button class="btn" id="again">Ещё раз</button></div>
+    ${S.topic?'<div class="spacer"></div><button class="btn ghost" id="th">Перечитать правило</button>':''}`;
+  document.getElementById('home').onclick=home;
+  document.getElementById('again').onclick=()=> S.topic? startSession(pick(S.topic.items,10),S.title,S.topic) : startSession(pick(ALL,10),'Все темы');
+  if(S.topic) document.getElementById('th').onclick=()=>topicScreen(S.topic);
+  window.scrollTo(0,0);
+}
+
+home();
+
+/* ============ ОФЛАЙН ============ */
+if('serviceWorker' in navigator && location.protocol!=='file:'){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
